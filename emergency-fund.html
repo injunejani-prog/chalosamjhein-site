@@ -115,7 +115,6 @@ ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
       </div>
       <div class="checks" role="group" aria-label="Your situation">
         <label class="check"><input type="checkbox" id="single" checked><span><b>Only earner at home</b><small>Nobody else's income to fall back on</small></span></label>
-        <label class="check"><input type="checkbox" id="deps" checked><span><b>Dependents</b><small>Children or parents rely on you</small></span></label>
         <label class="check"><input type="checkbox" id="emi"><span><b>Big EMIs</b><small>Loan payments take a large share of income</small></span></label>
         <label class="check"><input type="checkbox" id="var"><span><b>Irregular income</b><small>Freelance, business or commission-based</small></span></label>
       </div>
@@ -154,11 +153,11 @@ ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
     <h2 id="how-h">How this calculator decides the months</h2>
     <ul>
       <li>Starts at <b>3 months</b> of essential expenses, the low end of the common 3–6 month guideline.</li>
-      <li>Adds <b>1 month</b> each if you're the only earner, have dependents, or have big EMIs.</li>
+      <li>Adds <b>1 month</b> each if you're the only earner or have big EMIs.</li>
       <li>Adds <b>2 months</b> if your income is irregular.</li>
       <li>Caps at <b>9 months</b>. These steps are a simple illustration of the guideline, not a formula from a regulator.</li>
       <li>The slider lets you pick any number of months from 3 to 9 yourself. Your choice is used for the target.</li>
-      <li>The calculator never guesses what you spend on dependents. Their costs come from the boxes you fill in, such as school fees and parents' medical support.</li>
+      <li>Dependents are already covered: their costs (school fees, parents' medical support) are part of your monthly expenses, so they are counted for every month of the fund. No extra month is added for them, so nothing is counted twice.</li>
     </ul>
     <div class="foot">
       <span>Sources: Vanguard research on emergency savings (12,400+ investors), via CNBC, 30 May 2025 (US data). Planner guidance on 3–6 months of expenses via Stable Money, May 2025. DICGC deposit insurance limit of ₹5 lakh: <a href="https://www.dicgc.org.in" target="_blank" rel="noopener">dicgc.org.in</a>.</span>
@@ -171,12 +170,12 @@ ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
 const $=id=>document.getElementById(id);
 const fmt=n=>"₹"+Math.round(n).toLocaleString("en-IN");
 const num=el=>{const v=parseFloat(String(el.value).replace(/[^0-9.]/g,""));return isFinite(v)&&v>0?v:0};
-function monthsFor(f){let m=3;if(f.single)m++;if(f.deps)m++;if(f.emi)m++;if(f.var)m+=2;return Math.min(m,9)}
+function monthsFor(f){let m=3;if(f.single)m++;if(f.emi)m++;if(f.var)m+=2;return Math.min(m,9)}
 let manual=false;
 function update(){
   const cats=[...document.querySelectorAll(".cat")];
   const exp=cats.reduce((t,el)=>t+num(el),0),sal=num($("sal")),have=num($("have")),save=num($("save"));
-  const sug=monthsFor({single:$("single").checked,deps:$("deps").checked,emi:$("emi").checked,var:$("var").checked});
+  const sug=monthsFor({single:$("single").checked,emi:$("emi").checked,var:$("var").checked});
   if(!manual)$("mslider").value=sug;
   const m=parseInt($("mslider").value,10);
   $("sugtxt").textContent=manual&&m!==sug?"Suggested: "+sug+" · You chose: "+m:"Suggested: "+sug;
